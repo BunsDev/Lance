@@ -1,5 +1,5 @@
 {
-  "name": "block_magic-smart_contracts",
+  "name": "blockmagic-smartcontracts",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
@@ -9,12 +9,10 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "@nomicfoundation/hardhat-toolbox": "^1.0.1",
-    "chai": "^4.3.6",
-    "hardhat": "^2.11.1"
+    "@nomicfoundation/hardhat-toolbox": "^5.0.0",
+    "hardhat": "^2.22.4"
   },
   "dependencies": {
-    "@openzeppelin/contracts": "^4.7.3",
-    "dotenv": "^16.0.2"
+    "@openzeppelin/contracts": "^5.0.2"
   }
 }
