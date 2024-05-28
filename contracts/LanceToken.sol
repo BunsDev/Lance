@@ -5,11 +5,11 @@ pragma solidity ^0.8.17;
 import "@openzeppelin/contracts/token/ERC20/extensions/ERC20Burnable.sol";
 import "@openzeppelin/contracts/token/ERC20/extensions/ERC20Capped.sol";
 
-contract BidToken is ERC20Capped, ERC20Burnable {
+contract LanceToken is ERC20Capped, ERC20Burnable {
     address payable public owner;
     address public contract_ = address(this);
 
-    constructor(address signer1, address signer2, address signer3) ERC20("ChainlanceBidToken", "CBT") ERC20Capped(70000000 * (10 ** decimals())) {
+    constructor(address signer1, address signer2, address signer3) ERC20("LanceToken", "LNC") ERC20Capped(70000000 * (10 ** decimals())) {
         owner = payable(msg.sender);
         _mint(payable (signer1), 30);
         _mint(payable(signer2), 10);
