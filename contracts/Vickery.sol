@@ -6,7 +6,7 @@ import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import "hardhat/console.sol";
 
 interface ILance {
-    function launchEvaluationContract() external;
+    function launchEvaluationContract(address freelancer, bytes calldata jobIPFSHash) external;
 }
 
 
@@ -18,14 +18,15 @@ contract BlindAuction {
         uint256 deposit;
     }
 
-    // address payable public beneficiary;
+    address payable public beneficiary;
     uint public biddingEnd;
     uint public revealEnd;
     bool public ended;
     //Added by me
     uint[] public bidAmounts;
     IERC20 public token;
-
+    ILance public lanceContract;
+    address public clientAddress;
     event TransferReceived(address _from, uint _amount);
     event TransferSent(address _from, address _destAddr, uint _amount);
 
@@ -96,16 +97,14 @@ contract BlindAuction {
         uint biddingTime,
         uint revealTime,
         IERC20 bidToken_,
-        address lanceContract
-        // address payable beneficiaryAddress 
+        address lanceContractAddress
+        address payable clientAddress 
     ) {
-        // beneficiary = beneficiaryAddress;
+        clientAddress = beneficiaryAddress;
         biddingEnd = block.timestamp + biddingTime;
         revealEnd = biddingEnd + revealTime;
         token = bidToken_;
-        evaluatorContract = IEvaluator(evaluatorContractAddress);
-
-
+        lanceContract = ILance(lanceContractAddress);
     }
 
     function bid(address bidder, uint256 overbid, bytes32 blindedBid)
