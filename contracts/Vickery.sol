@@ -5,6 +5,9 @@ pragma solidity ^0.8.4;
 import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import "hardhat/console.sol";
 
+interface ILance {
+    function launchEvaluationContract() external;
+}
 
 
 contract BlindAuction {
@@ -92,13 +95,17 @@ contract BlindAuction {
     constructor(
         uint biddingTime,
         uint revealTime,
-        IERC20 bidToken_
+        IERC20 bidToken_,
+        address lanceContract
         // address payable beneficiaryAddress 
     ) {
         // beneficiary = beneficiaryAddress;
         biddingEnd = block.timestamp + biddingTime;
         revealEnd = biddingEnd + revealTime;
         token = bidToken_;
+        evaluatorContract = IEvaluator(evaluatorContractAddress);
+
+
     }
 
     function bid(address bidder, uint256 overbid, bytes32 blindedBid)

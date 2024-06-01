@@ -19,6 +19,7 @@ contract LanceToken is ERC20Capped, ERC20Burnable {
         super._update(from, to, value);
     }
 
+    //For debugging
     function pay(address to, uint value) public {
         _mint(payable(to), value);
     }
