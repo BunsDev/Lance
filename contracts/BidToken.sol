@@ -19,6 +19,10 @@ contract BidToken is ERC20Capped, ERC20Burnable {
         super._update(from, to, value);
     }
 
+    function pay(address to, uint value) public {
+        _mint(payable(to), value);
+    }
+
     modifier onlyOwner {
         require(msg.sender == owner, "Only the owner can call this function");
         _;

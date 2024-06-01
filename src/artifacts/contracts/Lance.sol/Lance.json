@@ -1,0 +1,95 @@
+{
+  "_format": "hh-sol-artifact-1",
+  "contractName": "Lance",
+  "sourceName": "contracts/Lance.sol",
+  "abi": [
+    {
+      "inputs": [],
+      "name": "createBid",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "createJob",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "evaluateJob",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "getJobBids",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "getJobPosts",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "getJobState",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "getSingleJob",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "getTestsLink",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "getUserJobPosts",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "submitEvaluatorScore",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "submitJob",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "submitSupervisorScore",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    }
+  ],
+  "bytecode": "0x608060405234801561001057600080fd5b50610100806100206000396000f3fe6080604052348015600f57600080fd5b506004361060c35760003560e01c8063b2dddf56116077578063c3d93784116054578063c3d937841460c8578063de0a983b1460c8578063eeba212c1460c857600080fd5b8063b2dddf561460c8578063bda849711460c8578063c1f687891460c857600080fd5b80634aa5800d1160a45780634aa5800d1460c85780635b6b57101460c8578063836240741460c857600080fd5b8063164576d41460c85780634646fc581460c85780634a4d00481460c8575b600080fd5b00fea2646970667358221220f8fbc20517dabd723c5f2d663455657685506c33c358f7e17dbf9abf0149a82264736f6c63430008180033",
+  "deployedBytecode": "0x6080604052348015600f57600080fd5b506004361060c35760003560e01c8063b2dddf56116077578063c3d93784116054578063c3d937841460c8578063de0a983b1460c8578063eeba212c1460c857600080fd5b8063b2dddf561460c8578063bda849711460c8578063c1f687891460c857600080fd5b80634aa5800d1160a45780634aa5800d1460c85780635b6b57101460c8578063836240741460c857600080fd5b8063164576d41460c85780634646fc581460c85780634a4d00481460c8575b600080fd5b00fea2646970667358221220f8fbc20517dabd723c5f2d663455657685506c33c358f7e17dbf9abf0149a82264736f6c63430008180033",
+  "linkReferences": {},
+  "deployedLinkReferences": {}
+}

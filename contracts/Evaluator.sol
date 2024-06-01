@@ -149,6 +149,11 @@ contract EvaluatorContract {
     function punishEvaluatorReduceStake(address evaluator, uint256 decrement) external {
         uint256 evaluatorKey = uint256(evaluatorKeys[evaluator]);
         Evaluator storage evaluator_ = evaluators[evaluatorKey];
+        if (decrement >= evaluator_.evaluatorStake) {
+            evaluator_.evaluatorStake = 0;
+            emit StakeDecreased(evaluator, evaluator_.evaluatorStake);
+            return;
+        }
         evaluator_.evaluatorStake = evaluator_.evaluatorStake - decrement;
         emit StakeDecreased(evaluator, decrement);
     }
