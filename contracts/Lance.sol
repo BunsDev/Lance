@@ -49,6 +49,17 @@ contract Lance {
      uint evaluatorAllocation_ = 7000;
      uint sharesForMedian_ = 7000;
      uint sharesForNonMedian_ = 3000;
+    uint fund_allocation_A = 0;
+    uint fund_allocation_B = 20;
+    uint fund_allocation_C = 40;
+    uint fund_allocation_D = 60;
+    uint fund_allocation_E = 80;
+    uint fund_allocation_F = 100;
+    uint B_start = 70;
+    uint C_start = 60;
+    uint D_start = 50;
+    uint E_start = 45;
+    uint F_start = 40;
 
 
     
