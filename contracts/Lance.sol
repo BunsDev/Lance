@@ -137,7 +137,7 @@ contract Lance {
 
     function SUBMIT_JOB(bytes calldata ipfsHash) public {
         //Modifier to check if its the freelancer that submitted the job
-        job_mapping[ipfsHash].job_state = JobState.Settled;  
+        job_mapping[ipfsHash].job_state = JobState.Submitted;  
     }
     
     function transferFromContract_(address destinationAddress, uint256 amount) private {
@@ -164,8 +164,21 @@ contract Lance {
          fund_allocation_C, fund_allocation_D, fund_allocation_E, fund_allocation_F, B_start, C_start, D_start, E_start, F_start, freelancer, client);
     }
 
-    function setJobState(bytes calldata jobIPFSHash, JobState jobState) external {
-        job_mapping[jobIPFSHash].job_state = jobState;
+    function setJobState(bytes calldata jobIPFSHash, uint jobStateNumber) external {
+        Job storage _job = job_mapping[jobIPFSHash];
+        if (jobStateNumber == 0) {
+            _job.job_state = JobState.Auction_Bidding;
+        } else if (jobStateNumber == 1) {
+            _job.job_state = JobState.Auction_Reveal;
+        } else if (jobStateNumber == 2) {
+            _job.job_state = JobState.Work_In_Progress;
+        } else if (jobStateNumber == 3) {
+            _job.job_state = JobState.Submitted;
+        } else if (jobStateNumber == 4) {
+            _job.job_state = JobState.Evaluation_In_Progress;
+        } else if (jobStateNumber == 5) {
+            _job.job_state = JobState.Settled;
+        }
     }
 
     //DAO Stuff Here

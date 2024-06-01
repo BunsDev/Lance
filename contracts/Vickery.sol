@@ -16,7 +16,7 @@ interface ILance {
     }
 
     function launchEvaluationContract(address freelancer, bytes calldata jobIPFSHash) external;
-    function setJobState(bytes calldata jobIPFSHash, JobState jobState) external;
+    function setJobState(bytes calldata jobIPFSHash, uint jobStateNumber) external;
 }
 
 
@@ -108,7 +108,7 @@ contract BlindAuction {
         IERC20 bidToken_,
         address lanceContractAddress,
         address payable clientAddress_,
-        bytes jobIPFSHash_
+        bytes memory jobIPFSHash_
     ) {
         clientAddress = clientAddress_;
         biddingEnd = block.timestamp + biddingTime;
@@ -177,7 +177,7 @@ contract BlindAuction {
     {
         if (ended) revert AuctionEndAlreadyCalled();
         emit AuctionEnded(highestBidder, highestBid);
-        lanceContract.setJobState(jobIPFSHash, JobState.Work_In_Progress);
+        lanceContract.setJobState(jobIPFSHash, 0);
         ended = true;
         secondHighestBid = getSecondHighestBid(bidAmounts);
         uint pendingRefund = highestBid - secondHighestBid;
