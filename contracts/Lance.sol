@@ -140,14 +140,6 @@ contract Lance {
         emit TransferSent(transferingAddress, address(this), amount);
     }
 
-
-    //  uint fees_ = 500;
-    //  uint numberOfEvaluators_ = 3;
-    //  uint decimals_ = 100;
-    //  uint heuristicAllocation_ = 4000;
-    //  uint evaluatorAllocation_ = 7000;
-    //  uint sharesForMedian_ = 7000;
-    //  uint sharesForNonMedian_ = 3000;
     function launchEvaluationContract(bytes calldata jobIPFSHash, JobState jobState) external {
         uint wage = job_mapping[jobIPFSHash].wage;
         job_evaluation[jobIPFSHash] = new Evaluation(evaluatorContractAddress, lanceToken, lanceBidToken, fees_, numberOfEvaluators_,

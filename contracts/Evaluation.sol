@@ -117,6 +117,8 @@ contract Evaluation {
     uint D_start_,
     uint E_start_,
     uint F_start_,
+    address workerAddress_,
+    address clientAddress_
 
      ) {
         evaluatorContract = IEvaluator(evaluatorContractAddress);
@@ -136,6 +138,20 @@ contract Evaluation {
         totalBids = totalBids_;
         wage = wage_;
         fees = fees_;
+
+        fund_allocation_A = fund_allocation_A_;
+        fund_allocation_B = fund_allocation_B_;
+        fund_allocation_C = fund_allocation_C_;
+        fund_allocation_D = fund_allocation_D_;
+        fund_allocation_E = fund_allocation_E_;
+        fund_allocation_F = fund_allocation_F_;
+        B_start = B_start_;
+        C_start = C_start_; 
+        D_start = D_start_; 
+        E_start = E_start_; 
+        F_start = F_start_; 
+        workerAddress =  workerAddress_;
+        clientAddress =  clientAddress_;
 
         actualBidsFees = multiply(fees, totalBids);
         actualWageFees = multiply(fees, wage);
