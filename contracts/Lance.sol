@@ -50,20 +50,24 @@ contract Lance {
      uint sharesForMedian_ = 7000;
      uint sharesForNonMedian_ = 3000;
     uint fund_allocation_A = 0;
-    uint fund_allocation_B = 20;
-    uint fund_allocation_C = 40;
-    uint fund_allocation_D = 60;
-    uint fund_allocation_E = 80;
-    uint fund_allocation_F = 100;
-    uint B_start = 70;
-    uint C_start = 60;
-    uint D_start = 50;
-    uint E_start = 45;
-    uint F_start = 40;
+    uint fund_allocation_B = 2000;
+    uint fund_allocation_C = 4000;
+    uint fund_allocation_D = 6000;
+    uint fund_allocation_E = 8000;
+    uint fund_allocation_F = 10000;
+    uint B_start = 7000;
+    uint C_start = 6000;
+    uint D_start = 5000;
+    uint E_start = 4500;
+    uint F_start = 4000;
+
+    //Auction DAO Variables
+    uint biddingTime = 10000;
+    uint revealTime = 10000;
 
 
     
-    function CREATE_JOB(uint wage, uint jobDetailsIPFSHash, uint biddingTime, uint revealTime) public {
+    function CREATE_JOB(uint wage, uint jobDetailsIPFSHash) public {
         transferToContract_(msg.sender, wage);
         BlindAuction vickeryAuction = new BlindAuction(biddingTime, revealTime, lanceBidToken);
         Job newJob = Job({
@@ -151,16 +155,102 @@ contract Lance {
         emit TransferSent(transferingAddress, address(this), amount);
     }
 
-    function launchEvaluationContract(bytes calldata jobIPFSHash, JobState jobState) external {
+    function launchEvaluationContract(address freelancer, bytes calldata jobIPFSHash) external {
         uint wage = job_mapping[jobIPFSHash].wage;
+        address client = job_mapping[jobIPFSHash].client;
+
         job_evaluation[jobIPFSHash] = new Evaluation(evaluatorContractAddress, lanceToken, lanceBidToken, fees_, numberOfEvaluators_,
-         decimals_, heuristicAllocation_, evaluatorAllocation_, sharesForMedian_, sharesForNonMedian_, totalBids, wage);
+         decimals_, heuristicAllocation_, evaluatorAllocation_, sharesForMedian_, sharesForNonMedian_, totalBids, wage, fund_allocation_A, fund_allocation_B, 
+         fund_allocation_C, fund_allocation_D, fund_allocation_E, fund_allocation_F, B_start, C_start, D_start, E_start, F_start, freelancer, client);
     }
 
     function setJobState(bytes calldata jobIPFSHash, JobState jobState) external {
         job_mapping[jobIPFSHash].job_state = jobState;
     }
 
+    //DAO Stuff Here
+    // Setter functions for Evaluation DAO Variables
+    function setFees(uint _fees) public {
+        fees_ = _fees;
+    }
 
+    function setNumberOfEvaluators(uint _numberOfEvaluators) public {
+        numberOfEvaluators_ = _numberOfEvaluators;
+    }
 
+    function setDecimals(uint _decimals) public {
+        decimals_ = _decimals;
+    }
+
+    function setHeuristicAllocation(uint _heuristicAllocation) public {
+        heuristicAllocation_ = _heuristicAllocation;
+    }
+
+    function setEvaluatorAllocation(uint _evaluatorAllocation) public {
+        evaluatorAllocation_ = _evaluatorAllocation;
+    }
+
+    function setSharesForMedian(uint _sharesForMedian) public {
+        sharesForMedian_ = _sharesForMedian;
+    }
+
+    function setSharesForNonMedian(uint _sharesForNonMedian) public {
+        sharesForNonMedian_ = _sharesForNonMedian;
+    }
+
+    function setFundAllocationA(uint _fund_allocation_A) public {
+        fund_allocation_A = _fund_allocation_A;
+    }
+
+    function setFundAllocationB(uint _fund_allocation_B) public {
+        fund_allocation_B = _fund_allocation_B;
+    }
+
+    function setFundAllocationC(uint _fund_allocation_C) public {
+        fund_allocation_C = _fund_allocation_C;
+    }
+
+    function setFundAllocationD(uint _fund_allocation_D) public {
+        fund_allocation_D = _fund_allocation_D;
+    }
+
+    function setFundAllocationE(uint _fund_allocation_E) public {
+        fund_allocation_E = _fund_allocation_E;
+    }
+
+    function setFundAllocationF(uint _fund_allocation_F) public {
+        fund_allocation_F = _fund_allocation_F;
+    }
+
+    function setBStart(uint _B_start) public {
+        B_start = _B_start;
+    }
+
+    function setCStart(uint _C_start) public {
+        C_start = _C_start;
+    }
+
+    function setDStart(uint _D_start) public {
+        D_start = _D_start;
+    }
+
+    function setEStart(uint _E_start) public {
+        E_start = _E_start;
+    }
+
+    function setFStart(uint _F_start) public {
+        F_start = _F_start;
+    }
+
+    // Setter functions for Auction DAO Variables
+    function setBiddingTime(uint _biddingTime) public {
+        biddingTime = _biddingTime;
+    }
+
+    function setRevealTime(uint _revealTime) public {
+        revealTime = _revealTime;
+    }
 }
+
+
+
