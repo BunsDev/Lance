@@ -35,9 +35,22 @@ contract Lance {
     Job[] public jobs;
     mapping(address=>Job[]) job_bids;
     mapping(address=>Job[]) job_posts;
+    address evaluatorContractAddress;
 
     event TransferReceived(address _from, uint _amount);
     event TransferSent(address _from, address _destAddr, uint _amount);
+
+
+    //Key DAO Variables Evaluation
+     uint fees_ = 500;
+     uint numberOfEvaluators_ = 3;
+     uint decimals_ = 100;
+     uint heuristicAllocation_ = 4000;
+     uint evaluatorAllocation_ = 7000;
+     uint sharesForMedian_ = 7000;
+     uint sharesForNonMedian_ = 3000;
+
+
     
     function CREATE_JOB(uint wage, uint jobDetailsIPFSHash, uint biddingTime, uint revealTime) public {
         transferToContract_(msg.sender, wage);
@@ -127,8 +140,22 @@ contract Lance {
         emit TransferSent(transferingAddress, address(this), amount);
     }
 
-    function launchEvaluationContract() external {
-        
+
+    //  uint fees_ = 500;
+    //  uint numberOfEvaluators_ = 3;
+    //  uint decimals_ = 100;
+    //  uint heuristicAllocation_ = 4000;
+    //  uint evaluatorAllocation_ = 7000;
+    //  uint sharesForMedian_ = 7000;
+    //  uint sharesForNonMedian_ = 3000;
+    function launchEvaluationContract(bytes calldata jobIPFSHash, JobState jobState) external {
+        uint wage = job_mapping[jobIPFSHash].wage;
+        job_evaluation[jobIPFSHash] = new Evaluation(evaluatorContractAddress, lanceToken, lanceBidToken, fees_, numberOfEvaluators_,
+         decimals_, heuristicAllocation_, evaluatorAllocation_, sharesForMedian_, sharesForNonMedian_, totalBids, wage);
+    }
+
+    function setJobState(bytes calldata jobIPFSHash, JobState jobState) external {
+        job_mapping[jobIPFSHash].job_state = jobState;
     }
 
 

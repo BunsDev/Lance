@@ -6,7 +6,17 @@ import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import "hardhat/console.sol";
 
 interface ILance {
+    enum JobState {
+        Auction_Bidding,
+        Auction_Reveal,
+        Work_In_Progress,
+        Submitted,
+        Evaluatino_In_Progress,
+        Settled
+    }
+
     function launchEvaluationContract(address freelancer, bytes calldata jobIPFSHash) external;
+    function setJobState(bytes calldata jobIPFSHash, JobState jobState) external;
 }
 
 
@@ -18,17 +28,25 @@ contract BlindAuction {
         uint256 deposit;
     }
 
-    address payable public beneficiary;
     uint public biddingEnd;
     uint public revealEnd;
     bool public ended;
-    //Added by me
     uint[] public bidAmounts;
     IERC20 public token;
     ILance public lanceContract;
     address public clientAddress;
+    address public freelancerAddress;
     event TransferReceived(address _from, uint _amount);
     event TransferSent(address _from, address _destAddr, uint _amount);
+    mapping(address => Bid[]) public bids;
+    address public highestBidder;
+    uint public highestBid;
+    uint public secondHighestBid;
+    // Allowed withdrawals of previous bids
+    mapping(address => uint) pendingReturns;
+    bytes jobIPFSHash;
+
+    event AuctionEnded(address winner, uint highestBid);
 
     function getSecondHighestBid(uint[] storage arr) internal view returns (uint) {
     uint highestBid_ = 0;
@@ -68,16 +86,7 @@ contract BlindAuction {
 
     }
 
-    mapping(address => Bid[]) public bids;
 
-    address public highestBidder;
-    uint public highestBid;
-    uint public secondHighestBid;
-
-    // Allowed withdrawals of previous bids
-    mapping(address => uint) pendingReturns;
-
-    event AuctionEnded(address winner, uint highestBid);
 
 
     error TooEarly(uint time);
@@ -97,14 +106,16 @@ contract BlindAuction {
         uint biddingTime,
         uint revealTime,
         IERC20 bidToken_,
-        address lanceContractAddress
-        address payable clientAddress 
+        address lanceContractAddress,
+        address payable clientAddress_,
+        bytes jobIPFSHash_
     ) {
-        clientAddress = beneficiaryAddress;
+        clientAddress = clientAddress_;
         biddingEnd = block.timestamp + biddingTime;
         revealEnd = biddingEnd + revealTime;
         token = bidToken_;
         lanceContract = ILance(lanceContractAddress);
+        jobIPFSHash = jobIPFSHash_;
     }
 
     function bid(address bidder, uint256 overbid, bytes32 blindedBid)
@@ -166,11 +177,12 @@ contract BlindAuction {
     {
         if (ended) revert AuctionEndAlreadyCalled();
         emit AuctionEnded(highestBidder, highestBid);
+        lanceContract.setJobState(jobIPFSHash, JobState.Work_In_Progress);
         ended = true;
-        // beneficiary.transfer(highestBid);
         secondHighestBid = getSecondHighestBid(bidAmounts);
         uint pendingRefund = highestBid - secondHighestBid;
-        transferFromContract(highestBidder, pendingRefund);   
+        transferFromContract(highestBidder, pendingRefund);
+        lanceContract.launchEvaluationContract(highestBidder, jobIPFSHash);
     }
 
 

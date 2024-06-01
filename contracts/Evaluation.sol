@@ -46,6 +46,11 @@ contract Evaluation {
     address clientAddress;
 
     uint wage;
+    uint totalBids;
+    uint wageAfterFees;
+    uint totalBidsAfterFees;
+    uint actualBidsFees;
+    uint actualWageFees;
 
 
     Grade grade;
@@ -74,30 +79,45 @@ contract Evaluation {
     uint public algorithmicAllocation;
     uint public evaluatorAllocation;
     uint public clientAllocation;
-
-
-
     IERC20 lanceToken;
     IERC20 bidToken;
-
     uint256 sharesForMedian;
     uint256 sharesForNonMedian;
     
+    
+    
     uint[] private data;
+
+
 
     
 
 
     constructor(
      address evaluatorContractAddress,
-     IERC20 lanceToken_, IERC20 bidToken_, 
+     IERC20 lanceToken_, 
+     IERC20 bidToken_, 
      uint fees_, 
      uint numberOfEvaluators_, 
      uint decimals_,
      uint heuristicAllocation_,
      uint evaluatorAllocation_,
      uint sharesForMedian_,
-     uint sharesForNonMedian_
+     uint sharesForNonMedian_,
+     uint totalBids_,
+     uint wage_,
+    uint fund_allocation_A_,
+    uint fund_allocation_B_,
+    uint fund_allocation_C_,
+    uint fund_allocation_D_,
+    uint fund_allocation_E_,
+    uint fund_allocation_F_,
+    uint B_start_,
+    uint C_start_,
+    uint D_start_,
+    uint E_start_,
+    uint F_start_,
+
      ) {
         evaluatorContract = IEvaluator(evaluatorContractAddress);
         lanceToken = lanceToken_;
@@ -113,6 +133,15 @@ contract Evaluation {
         clientAllocation = 100 * decimals - evaluatorAllocation;
         sharesForMedian = sharesForMedian_;
         sharesForNonMedian = sharesForNonMedian_;
+        totalBids = totalBids_;
+        wage = wage_;
+        fees = fees_;
+
+        actualBidsFees = multiply(fees, totalBids);
+        actualWageFees = multiply(fees, wage);
+
+        wageAfterFees = wage - actualWageFees;
+        totalBidsAfterFees = totalBids - actualBidsFees;
 
         populateEvaluators(1000, numberOfEvaluators_);
     }
@@ -316,8 +345,8 @@ contract Evaluation {
         }
 
         PaymentSplitter paymentSplitter = new PaymentSplitter(payees, shares);
-        transferLanceBidFromContract(address(paymentSplitter), fees);
-        transferLanceFromContract(address(paymentSplitter), fees);
+        transferLanceBidFromContract(address(paymentSplitter), totalBidsAfterFees);
+        transferLanceFromContract(address(paymentSplitter), wageAfterFees);
         
         for (uint i = 0; i < payees.length; i++) {
             paymentSplitter.release(lanceToken,payees[i]);
@@ -379,7 +408,7 @@ contract Evaluation {
         } else if (grade == Grade.F) {
             clientWorkerSplitter = new PaymentSplitter(clientWorkerAddresses, getAllocationArray(fund_allocation_F));
         }
-        transferLanceFromContract(address(clientWorkerSplitter), wage);
+        transferLanceFromContract(address(clientWorkerSplitter), wageAfterFees);
         clientWorkerSplitter.release(lanceToken, clientAddress);
         clientWorkerSplitter.release(lanceToken, workerAddress);
     }
