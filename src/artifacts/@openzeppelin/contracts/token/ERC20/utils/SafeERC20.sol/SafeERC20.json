@@ -2,42 +2,9 @@
   "_format": "hh-sol-artifact-1",
   "contractName": "SafeERC20",
   "sourceName": "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol",
-  "abi": [
-    {
-      "inputs": [
-        {
-          "internalType": "address",
-          "name": "spender",
-          "type": "address"
-        },
-        {
-          "internalType": "uint256",
-          "name": "currentAllowance",
-          "type": "uint256"
-        },
-        {
-          "internalType": "uint256",
-          "name": "requestedDecrease",
-          "type": "uint256"
-        }
-      ],
-      "name": "SafeERC20FailedDecreaseAllowance",
-      "type": "error"
-    },
-    {
-      "inputs": [
-        {
-          "internalType": "address",
-          "name": "token",
-          "type": "address"
-        }
-      ],
-      "name": "SafeERC20FailedOperation",
-      "type": "error"
-    }
-  ],
-  "bytecode": "0x60566037600b82828239805160001a607314602a57634e487b7160e01b600052600060045260246000fd5b30600052607381538281f3fe73000000000000000000000000000000000000000030146080604052600080fdfea264697066735822122065e37ea87e8e588bee304bfb8dd58bb78d962c4b4610d4caef0f99c2e8be45d564736f6c63430008180033",
-  "deployedBytecode": "0x73000000000000000000000000000000000000000030146080604052600080fdfea264697066735822122065e37ea87e8e588bee304bfb8dd58bb78d962c4b4610d4caef0f99c2e8be45d564736f6c63430008180033",
+  "abi": [],
+  "bytecode": "0x60566037600b82828239805160001a607314602a57634e487b7160e01b600052600060045260246000fd5b30600052607381538281f3fe73000000000000000000000000000000000000000030146080604052600080fdfea2646970667358221220a66678c47cc2c8935e82fd378d3139022855821aea9666d16c8af28cc890386464736f6c63430008180033",
+  "deployedBytecode": "0x73000000000000000000000000000000000000000030146080604052600080fdfea2646970667358221220a66678c47cc2c8935e82fd378d3139022855821aea9666d16c8af28cc890386464736f6c63430008180033",
   "linkReferences": {},
   "deployedLinkReferences": {}
 }

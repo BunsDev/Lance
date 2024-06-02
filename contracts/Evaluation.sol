@@ -2,8 +2,9 @@
 
 pragma solidity ^0.8.4;
 
-import "hardhat/console.sol";
-import "./OpenZepplinRemovedContracts.sol";
+// import "hardhat/console.sol";
+import "@openzeppelin/contracts/finance/PaymentSplitter.sol";
+import "./Vickery.sol";
 
 
 interface IEvaluator {
@@ -17,6 +18,7 @@ interface IEvaluator {
     function getRandomEvaluators(uint seed, uint256 number) external view returns (address[5000] memory);
     function punishEvaluatorReduceStake(address evaluator, uint256 decrement) external;
 }
+
 
 contract Evaluation {
     
@@ -34,27 +36,23 @@ contract Evaluation {
     uint D_start;
     uint E_start;
     uint F_start;
-
     uint fund_allocation_A;
     uint fund_allocation_B;
     uint fund_allocation_C;
     uint fund_allocation_D;
     uint fund_allocation_E;
     uint fund_allocation_F;
-
     address workerAddress;
     address clientAddress;
-
     uint wage;
     uint totalBids;
     uint wageAfterFees;
     uint totalBidsAfterFees;
     uint actualBidsFees;
     uint actualWageFees;
-
-
     Grade grade;
     IEvaluator evaluatorContract;
+    ILance lanceContract;
     address[] evaluators;
     bool[] evaluatorsSubmitted;
     uint256 public ownerScore;
@@ -79,10 +77,12 @@ contract Evaluation {
     uint public algorithmicAllocation;
     uint public evaluatorAllocation;
     uint public clientAllocation;
-    IERC20 lanceToken;
-    IERC20 bidToken;
-    uint256 sharesForMedian;
-    uint256 sharesForNonMedian;
+    IERC20 public  _lanceToken;
+    IERC20 public _bidToken;
+    uint256 public sharesForMedian;
+    uint256 public sharesForNonMedian;
+    bytes public jobIPFS;
+    uint public numberOfEvaluators;
     
     
     
@@ -95,71 +95,54 @@ contract Evaluation {
 
     constructor(
      address evaluatorContractAddress,
+     address lanceContractAddress,
      IERC20 lanceToken_, 
      IERC20 bidToken_, 
-     uint fees_, 
-     uint numberOfEvaluators_, 
-     uint decimals_,
-     uint heuristicAllocation_,
-     uint evaluatorAllocation_,
-     uint sharesForMedian_,
-     uint sharesForNonMedian_,
-     uint totalBids_,
-     uint wage_,
-    uint fund_allocation_A_,
-    uint fund_allocation_B_,
-    uint fund_allocation_C_,
-    uint fund_allocation_D_,
-    uint fund_allocation_E_,
-    uint fund_allocation_F_,
-    uint B_start_,
-    uint C_start_,
-    uint D_start_,
-    uint E_start_,
-    uint F_start_,
+    uint[20] memory variables,
     address workerAddress_,
-    address clientAddress_
+    address clientAddress_,
+    bytes memory jobIPFS_
 
      ) {
         evaluatorContract = IEvaluator(evaluatorContractAddress);
-        lanceToken = lanceToken_;
-        bidToken = bidToken_;
-        fees = fees_;
-        evaluatorAlgorithmicScore = new uint[](numberOfEvaluators_);
-        evaluatorHeuristicScore = new uint[](numberOfEvaluators_);
-        evaluatorsSubmitted  = new bool[](numberOfEvaluators_);
-        decimals = decimals_;
-        heuristicAllocation = heuristicAllocation_;
-        algorithmicAllocation = 100 * decimals - heuristicAllocation_;
-        evaluatorAllocation = evaluatorAllocation_;
+        lanceContract = ILance(lanceContractAddress);
+        _lanceToken = lanceToken_;
+        _bidToken = bidToken_;
+        fees = variables[0];
+        numberOfEvaluators = variables[1];
+        evaluatorAlgorithmicScore = new uint[](variables[1]);
+        evaluatorHeuristicScore = new uint[](variables[1]);
+        evaluatorsSubmitted  = new bool[](variables[1]);
+        decimals = variables[2];
+        heuristicAllocation = variables[3];
+        algorithmicAllocation = 100 * decimals - heuristicAllocation;
+        evaluatorAllocation = variables[4];
         clientAllocation = 100 * decimals - evaluatorAllocation;
-        sharesForMedian = sharesForMedian_;
-        sharesForNonMedian = sharesForNonMedian_;
-        totalBids = totalBids_;
-        wage = wage_;
-        fees = fees_;
-
-        fund_allocation_A = fund_allocation_A_;
-        fund_allocation_B = fund_allocation_B_;
-        fund_allocation_C = fund_allocation_C_;
-        fund_allocation_D = fund_allocation_D_;
-        fund_allocation_E = fund_allocation_E_;
-        fund_allocation_F = fund_allocation_F_;
-        B_start = B_start_;
-        C_start = C_start_; 
-        D_start = D_start_; 
-        E_start = E_start_; 
-        F_start = F_start_; 
+        sharesForMedian = variables[5];
+        sharesForNonMedian = variables[6];
+        totalBids = variables[7];
+        wage = variables[8];
+        fund_allocation_A = variables[9];
+        fund_allocation_B = variables[10];
+        fund_allocation_C = variables[11];
+        fund_allocation_D = variables[12];
+        fund_allocation_E = variables[13];
+        fund_allocation_F = variables[14];
+        B_start = variables[15];
+        C_start = variables[16]; 
+        D_start = variables[17]; 
+        E_start = variables[18]; 
+        F_start = variables[19]; 
+        jobIPFS = jobIPFS_;
         workerAddress =  workerAddress_;
         clientAddress =  clientAddress_;
-
         actualBidsFees = multiply(fees, totalBids);
         actualWageFees = multiply(fees, wage);
-
         wageAfterFees = wage - actualWageFees;
         totalBidsAfterFees = totalBids - actualBidsFees;
 
-        populateEvaluators(1000, numberOfEvaluators_);
+        //Call get random here
+        lanceContract.getSeedAndPopulate(jobIPFS);             
     }
 
     function getEvaluatorScores() public view returns (uint[] memory, uint[] memory) {
@@ -216,16 +199,16 @@ contract Evaluation {
     }
 
     function transferLanceFromContract(address destinationAddress, uint256 amount) private {
-        uint256 erc20balance = lanceToken.balanceOf(address(this));
+        uint256 erc20balance = _lanceToken.balanceOf(address(this));
         require(amount <= erc20balance, "balance is low");
-        lanceToken.transfer(destinationAddress, amount);
+        _lanceToken.transfer(destinationAddress, amount);
     }
 
     
     function transferLanceBidFromContract(address destinationAddress, uint256 amount) private {
-        uint256 erc20balance = bidToken.balanceOf(address(this));
+        uint256 erc20balance = _bidToken.balanceOf(address(this));
         require(amount <= erc20balance, "balance is low");
-        bidToken.transfer(destinationAddress, amount);
+        _bidToken.transfer(destinationAddress, amount);
     }
 
     function populateEvaluators(uint seed, uint amount) public  {
@@ -365,8 +348,8 @@ contract Evaluation {
         transferLanceFromContract(address(paymentSplitter), wageAfterFees);
         
         for (uint i = 0; i < payees.length; i++) {
-            paymentSplitter.release(lanceToken,payees[i]);
-            paymentSplitter.release(bidToken, payees[i]);
+            paymentSplitter.release(_lanceToken,payees[i]);
+            paymentSplitter.release(_bidToken, payees[i]);
         }
 
         for (uint i = 0; i < repercursions.length; i++) {
@@ -425,8 +408,8 @@ contract Evaluation {
             clientWorkerSplitter = new PaymentSplitter(clientWorkerAddresses, getAllocationArray(fund_allocation_F));
         }
         transferLanceFromContract(address(clientWorkerSplitter), wageAfterFees);
-        clientWorkerSplitter.release(lanceToken, clientAddress);
-        clientWorkerSplitter.release(lanceToken, workerAddress);
+        clientWorkerSplitter.release(_lanceToken, clientAddress);
+        clientWorkerSplitter.release(_lanceToken, workerAddress);
     }
 
     function multiply(uint value1, uint value2) private view returns (uint) {

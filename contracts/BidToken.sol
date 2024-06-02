@@ -13,9 +13,9 @@ contract BidToken is ERC20Capped, ERC20Burnable {
         owner = payable(msg.sender);
         _mint(payable (msg.sender), 70000000);
     }
-    function _update(address from, address to, uint value) internal virtual  override(ERC20Capped, ERC20) {
-        super._update(from, to, value);
-    }
+    // function _update(address from, address to, uint value) internal virtual  override(ERC20Capped, ERC20) {
+    //     super._update(from, to, value);
+    // }
 
     //For testing
     function pay(address to, uint value) public {
@@ -26,4 +26,10 @@ contract BidToken is ERC20Capped, ERC20Burnable {
         require(msg.sender == owner, "Only the owner can call this function");
         _;
     }
+
+    function _mint(address account, uint256 amount) internal virtual override(ERC20Capped, ERC20) {
+        require(ERC20.totalSupply() + amount <= cap(), "ERC20Capped: cap exceeded");
+        super._mint(account, amount);
+    }
+
 }

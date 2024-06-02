@@ -17,6 +17,8 @@ interface ILance {
 
     function launchEvaluationContract(address freelancer, bytes calldata jobIPFSHash) external;
     function setJobState(bytes calldata jobIPFSHash, uint jobStateNumber) external;
+    function setTotalBids(bytes calldata ipfsHash, uint bidAmount) external;
+    function getSeedAndPopulate(bytes memory jobIPFS) external;
 }
 
 
@@ -42,9 +44,10 @@ contract BlindAuction {
     address public highestBidder;
     uint public highestBid;
     uint public secondHighestBid;
-    // Allowed withdrawals of previous bids
     mapping(address => uint) pendingReturns;
-    bytes jobIPFSHash;
+    bytes public jobIPFSHash;
+    uint public decimals;
+    uint public fees;
 
     event AuctionEnded(address winner, uint highestBid);
 
@@ -108,7 +111,9 @@ contract BlindAuction {
         IERC20 bidToken_,
         address lanceContractAddress,
         address payable clientAddress_,
-        bytes memory jobIPFSHash_
+        bytes memory jobIPFSHash_,
+        uint decimals_,
+        uint fees_
     ) {
         clientAddress = clientAddress_;
         biddingEnd = block.timestamp + biddingTime;
@@ -116,6 +121,8 @@ contract BlindAuction {
         token = bidToken_;
         lanceContract = ILance(lanceContractAddress);
         jobIPFSHash = jobIPFSHash_;
+        decimals = decimals_;
+        fees = fees_;
     }
 
     function bid(address bidder, uint256 overbid, bytes32 blindedBid)
@@ -143,6 +150,7 @@ contract BlindAuction {
         require(secrets.length == length);
 
         uint refund;
+        uint totalBid;
         for (uint i = 0; i < length; i++) {
             Bid storage bidToCheck = bids[bidder][i];
             (uint value, bytes32 secret) =
@@ -153,13 +161,16 @@ contract BlindAuction {
                 continue;
             }
             refund += bidToCheck.deposit;
+            totalBid = bidToCheck.deposit;
             if (bidToCheck.deposit >= value) {
                 if (placeBid(bidder, value))
                     refund -= value;
             }
             bidToCheck.blindedBid = bytes32(0);
         }
-        transferFromContract(bidder, refund);
+                
+        transferFromContract(bidder, multiply(refund, fees));
+        lanceContract.setTotalBids(jobIPFSHash, totalBid);
     }
 
     /// Withdraw a bid that was overbid.
@@ -200,5 +211,9 @@ contract BlindAuction {
         highestBid = value;
         highestBidder = bidder;
         return true;
+    }
+
+    function multiply(uint value1, uint value2) private view returns (uint) {
+        return (value1 * value2)/decimals; 
     }
 }

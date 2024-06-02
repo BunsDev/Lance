@@ -141,9 +141,18 @@ contract EvaluatorContract {
     function getRandomEvaluators(uint seed, uint256 number) external view returns (address[5000] memory) {
         address[5000] memory random_evaluators;
         for (uint i = 0; i < number; i++) {
-            random_evaluators[i] = (availableEvaluators[i]);
+            uint256 randomValue = uint256(keccak256(abi.encode(seed, i))) % availableEvaluators.length;
+            random_evaluators[i] = (availableEvaluators[randomValue]);
         }
         return random_evaluators;
+    }
+
+    function expand(uint256 randomValue, uint256 n) public pure returns (uint256[] memory expandedValues) {
+        expandedValues = new uint256[](n);
+        for (uint256 i = 0; i < n; i++) {
+            expandedValues[i] = uint256(keccak256(abi.encode(randomValue, i)));
+        }
+        return expandedValues;
     }
 
     function punishEvaluatorReduceStake(address evaluator, uint256 decrement) external {
